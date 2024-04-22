@@ -121,16 +121,7 @@
         style="width: 700px; height: 700px;"
     />
 </div>
-<div class="container">
-    <div class="main">
-        <a
-            href="#"
-            on:click={() => {
-                addColor();
-            }}>Add</a
-        >
-    </div>
-</div>
+<div class="container"></div>
 <br />
 <div class="container">
     <Video
@@ -143,6 +134,15 @@
         <button on:click={loadCamera} id="enable-video-button"
             >Enable Video</button
         >
+    {:else}
+        <div class="main">
+            <a
+                href="#"
+                on:click={() => {
+                    addColor();
+                }}>Add</a
+            >
+        </div>
     {/if}
 </div>
 
