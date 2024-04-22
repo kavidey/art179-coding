@@ -1,3 +1,11 @@
+const k = 2;
+/**
+ * @param {number} z
+ */
+function sigmoid(z) {
+    return 1 / (1 + Math.exp(-z / k));
+}
+
 /**
  * @param {{ x: number; y: number; }} a
  * @param {{ x: number; y: number; }} b
@@ -10,11 +18,16 @@ function getProjectionDistance(a, b, c) {
     const kcom = (c.x * (a.x - b.x) + c.y * (a.y - b.y));
     const d1 = ((k1 - kcom) / ab2);
     const d2 = ((k2 + kcom) / ab2);
-    const exponent = 0.5;
+    const exponent = 0.8;
     const d1_mod = Math.sign(d1) * Math.abs(d1) ** exponent;
     const d2_mod = Math.sign(d2) * Math.abs(d2) ** exponent;
     return { d1: d1_mod, d2: d2_mod };
-    // return { d1, d2}
+    return { d1, d2}
+    // const d1 = Math.sqrt((a.x - c.x) ** 2 + (a.y - c.y) ** 2)/100;
+    // const d2 = Math.sqrt((b.x - c.x) ** 2 + (b.y - c.y) ** 2)/100;
+    // // console.log(d1, d2)
+    // // console.log(sigmoid(d1*10), sigmoid(d2*10))
+    // return {d2: d1*d2};
 }
 
 /**
@@ -39,14 +52,14 @@ function getWeightedColorMix(points, ratios) {
     let l = 0;
     let a = 0;
     let b = 0;
-    
+
     points.forEach((point, ind) => {
         l += point.c.l * ratios[ind];
         a += point.c.a * ratios[ind];
         b += point.c.b * ratios[ind];
     })
 
-    return {mode: "oklab", l: l, a: a, b: b};
+    return { mode: "oklab", l: l, a: a, b: b };
 }
 
 /**

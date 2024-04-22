@@ -11,7 +11,23 @@
     }
 
     function drawColors() {
-        
+        let xcs = colors.map((p) => p.x);
+        let ycs = colors.map((p) => p.y);
+        let xmin = Math.min(...xcs);
+        let xmax = Math.max(...xcs);
+        let ymin = Math.min(...ycs);
+        let ymax = Math.max(...ycs);
+        let x, y;
+        let mixColor;
+
+        for (x = 0; x < width; x++) {
+            for (y = 0; y < height; y++) {
+                mixColor = getGeometricColorMix({ x: x, y: y }, colors);
+                // @ts-ignore
+                ctx.fillStyle = formatCss(mixColor);
+                ctx?.fillRect(x, y, 1, 1);
+            }
+        }
     }
 
     /**
@@ -20,7 +36,7 @@
     async function addColor(color) {
         const { data, error } = await supabase
             .from("color")
-            .insert([{ color: color }])
+            .insert([{ color: color, x: Math.random(), y: Math.random() }])
             .select();
     }
 
@@ -36,15 +52,21 @@
         });
         colors = colors.slice(Math.max(colors.length - max_colors, 1));
         // console.log("got colors");
+
+        drawColors();
     }
-    const width = 500;
-    const height = 500;
+    const width = 100;
+    const height = 100;
     const max_colors = 5;
 
     /**
      * @type {HTMLCanvasElement}
      */
     let canvas;
+    /**
+     * @type {CanvasRenderingContext2D | null}
+     */
+    let ctx;
 
     /**
      * @type {any[]}
@@ -68,55 +90,30 @@
             )
             .subscribe();
 
+        ctx = canvas.getContext("2d");
         await getColors();
-
-        const ctx = canvas.getContext("2d");
-
-        // let points = [
-        //     { x: 10, y: 10, c: oklab(parse("#FF0000")) },
-        //     { x: 70, y: 150, c: oklab(parse("#FFFF00")) },
-        //     { x: 224, y: 300, c: oklab(parse("#00FF00")) },
-        //     { x: 121, y: 100, c: oklab(parse("#00FFFF")) },
-        //     { x: 160, y: 10, c: oklab(parse("#FF00FF")) },
-        // ];
-
-        // console.log(points);
-
-        // iterate all the pixels between the given points
-        $: {
-            if (colors) {
-                console.log(colors);
-                let xcs = colors.map((p) => p.x);
-                let ycs = colors.map((p) => p.y);
-                let xmin = Math.min(...xcs);
-                let xmax = Math.max(...xcs);
-                let ymin = Math.min(...ycs);
-                let ymax = Math.max(...ycs);
-                let x, y;
-                let mixColor;
-
-                for (x = 0; x < width; x++) {
-                    for (y = 0; y < height; y++) {
-                        mixColor = getGeometricColorMix({ x: x, y: y }, colors);
-                        // @ts-ignore
-                        ctx.fillStyle = formatCss(mixColor);
-                        ctx?.fillRect(x, y, 1, 1);
-                    }
-                }
-            }
-        }
     });
+
+    const blur_amount = 50;
 </script>
 
+<div id="art-container">
+    <canvas
+        id="art"
+        bind:this={canvas}
+        {width}
+        {height}
+        style="width: 700px; height: 700px;"
+    />
+</div>
 <button
     on:click={() => {
         addColor(generateRandomColor());
     }}>Add Color</button
 >
-<br>
+<br />
 
-<canvas bind:this={canvas} {width} {height} />
-
+<!-- 
 {#if colors}
 {#each colors as color}
 <div style:background-color={formatCss(color.c)}>
@@ -124,4 +121,12 @@
 </div>
 {/each}
 {/if}
+ -->
 
+<style>
+    #art-container {
+        max-width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
