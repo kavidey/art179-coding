@@ -18,7 +18,7 @@ function getProjectionDistance(a, b, c) {
     const kcom = (c.x * (a.x - b.x) + c.y * (a.y - b.y));
     const d1 = ((k1 - kcom) / ab2);
     const d2 = ((k2 + kcom) / ab2);
-    const exponent = 0.8;
+    const exponent = 1;
     const d1_mod = Math.sign(d1) * Math.abs(d1) ** exponent;
     const d2_mod = Math.sign(d2) * Math.abs(d2) ** exponent;
     return { d1: d1_mod, d2: d2_mod };

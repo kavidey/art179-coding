@@ -3,12 +3,13 @@
     import { parse, oklab, samples, interpolate, formatCss } from "culori";
     import { onMount } from "svelte";
     import { getGeometricColorMix } from "$lib/colormix";
+    import Video from "./Video.svelte";
 
-    function generateRandomColor() {
-        return "#000000".replace(/0/g, function () {
-            return (~~(Math.random() * 16)).toString(16);
-        });
-    }
+    // function generateRandomColor() {
+    //     color =  "#000000".replace(/0/g, function () {
+    //         return (~~(Math.random() * 16)).toString(16);
+    //     });
+    // }
 
     function drawColors() {
         let xcs = colors.map((p) => p.x);
@@ -30,13 +31,13 @@
         }
     }
 
-    /**
-     * @param {string} color
-     */
-    async function addColor(color) {
+    async function addColor() {
+        console.log(camera_color);
         const { data, error } = await supabase
             .from("color")
-            .insert([{ color: color, x: Math.random(), y: Math.random() }])
+            .insert([
+                { color: camera_color, x: Math.random(), y: Math.random() },
+            ])
             .select();
     }
 
@@ -57,7 +58,7 @@
     }
     const width = 100;
     const height = 100;
-    const max_colors = 5;
+    const max_colors = 10;
 
     /**
      * @type {HTMLCanvasElement}
@@ -95,9 +96,23 @@
     });
 
     const blur_amount = 50;
+
+    /**
+     * @type {any}
+     */
+    let videoSource;
+    /**
+     * @type {any}
+     */
+    let loadCamera;
+
+    /**
+     * @type {string}
+     */
+    let camera_color;
 </script>
 
-<div id="art-container">
+<div class="container">
     <canvas
         id="art"
         bind:this={canvas}
@@ -106,27 +121,105 @@
         style="width: 700px; height: 700px;"
     />
 </div>
-<button
-    on:click={() => {
-        addColor(generateRandomColor());
-    }}>Add Color</button
->
-<br />
-
-<!-- 
-{#if colors}
-{#each colors as color}
-<div style:background-color={formatCss(color.c)}>
-    {JSON.stringify(color)}
+<div class="container">
+    <div class="main">
+        <a
+            href="#"
+            on:click={() => {
+                addColor();
+            }}>Add</a
+        >
+    </div>
 </div>
-{/each}
-{/if}
- -->
+<br />
+<div class="container">
+    <Video
+        bind:videoSource
+        bind:obtenerVideoCamara={loadCamera}
+        bind:color={camera_color}
+    />
+    <br />
+    {#if videoSource && !videoSource.srcObject}
+        <button on:click={loadCamera} id="enable-video-button"
+            >Enable Video</button
+        >
+    {/if}
+</div>
 
 <style>
-    #art-container {
+    .container {
         max-width: fit-content;
         margin-left: auto;
         margin-right: auto;
+    }
+
+    @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&display=swap");
+    *,
+    *::before,
+    *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .main {
+        width: 170px;
+        height: 70px;
+        font-weight: bold;
+        font-size: 20px;
+        font-family: "Josefin Sans", sans-serif;
+        background-color: #b4b7bf;
+        cursor: pointer;
+        box-shadow: 5px 5px 0 0;
+        transition: 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 20px;
+    }
+    a {
+        position: absolute;
+        text-decoration: none;
+        color: #000;
+        z-index: 1000;
+    }
+    .main::after {
+        content: "";
+        top: 0;
+        left: 0;
+        width: 170px;
+        height: 70px;
+        background: linear-gradient(to right, #ff7675, #e84393);
+        opacity: 0;
+        transition: 0.3s;
+    }
+    .main:hover {
+        box-shadow: -5px -5px 0 0;
+        transform: scale(0.9);
+    }
+    .main:hover::after {
+        opacity: 1;
+    }
+
+    #enable-video-button {
+        display: inline-block;
+        outline: 0;
+        text-align: center;
+        cursor: pointer;
+        padding: 17px 30px;
+        border: 0;
+        color: #fff;
+        font-size: 17.5px;
+        border: 2px solid transparent;
+        border-color: #000;
+        color: #000;
+        background: transparent;
+        font-weight: 800;
+        line-height: 30px;
     }
 </style>
