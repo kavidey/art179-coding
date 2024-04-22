@@ -113,6 +113,7 @@
 </script>
 
 <div class="container">
+    <h1 style="font-family: 'Josefin Sans', sans-serif;">Collaborative Art<h1/>
     <canvas
         id="art"
         bind:this={canvas}
@@ -131,6 +132,8 @@
     />
     <br />
     {#if videoSource && !videoSource.srcObject}
+        <p style="font-style: italic; font-family: 'Josefin Sans', sans-serif;">Enable video to pick a color and modify the image</p>
+        <br/>
         <button on:click={loadCamera} id="enable-video-button"
             >Enable Video</button
         >
