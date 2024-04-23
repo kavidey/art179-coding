@@ -9,7 +9,9 @@
         try {
             loading = true;
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
+                video: {
+                    facingMode: "environment"
+                },
             });
             videoSource.srcObject = stream;
             videoSource.play();
@@ -66,7 +68,7 @@
     <canvas bind:this={canvas} style="display: none" />
     <img bind:this={img} style="display: none" />
     {#if videoSource && videoSource.srcObject}
-    <span class="dot" style="background-color: {color}"></span>
+        <span class="dot" style="background-color: {color}"></span>
     {/if}
 </div>
 
